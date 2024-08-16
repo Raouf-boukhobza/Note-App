@@ -5,6 +5,7 @@ import com.raouf.noteapp.Data.Local.Note
 import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.Data.Local.Sort
 import com.raouf.noteapp.ui.theme.green
+import kotlinx.serialization.Contextual
 
 
 data class NoteState(

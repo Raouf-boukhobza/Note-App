@@ -14,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -29,6 +30,7 @@ class NoteViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(NoteState())
     private val _sortType = MutableStateFlow(Sort.All)
+    private val _selectedNote = MutableStateFlow<Note?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _noteList : StateFlow<List<Note>> = _sortType.flatMapLatest{ sorttype ->
@@ -39,10 +41,10 @@ class NoteViewModel @Inject constructor(
     }.stateIn(viewModelScope , SharingStarted.WhileSubscribed() , emptyList())
 
 
-    val state = combine(_state , _noteList , _sortType ){ state, notelist, sortType ->
+    val state = combine(_state , _noteList , _sortType){ state, notelist, sortType  ->
         state.copy(
             noteList = notelist,
-            Sort = sortType
+            Sort = sortType,
         )
     }.stateIn(viewModelScope , SharingStarted.WhileSubscribed(5000),NoteState())
 
@@ -81,22 +83,47 @@ class NoteViewModel @Inject constructor(
 
 
 
-            NoteEvent.SavaNote -> {
+            NoteEvent.SaveNote -> {
                 val title = state.value.title
-                val descrition = state.value.description
+                val description = state.value.description
                 val type = state.value.type
                 val color = state.value.color
 
                 val note = Note(
                     title = title,
-                    description = descrition,
+                    description = description,
                     type = type.toString(),
                     color = color.toArgb()
                 )
                 viewModelScope.launch {
                     dao.addNote(note)
                 }
+                _state.update {
+                    it.copy(
+                        title = "",
+                        description = "",
+                        type = NoteType.JournalEntry,
+                        isAddingNote = false
+                    )
+                }
+            }
 
+            is NoteEvent.SavaUpdate-> {
+                val title = state.value.title
+                val description = state.value.description
+                val type = state.value.type
+                val color = state.value.color
+
+                val note = Note(
+                    id = event.id,
+                    title = title,
+                    description = description,
+                    type = type.toString(),
+                    color = color.toArgb()
+                )
+                viewModelScope.launch {
+                    dao.addNote(note)
+                }
                 _state.update {
                     it.copy(
                         title = "",
@@ -109,17 +136,23 @@ class NoteViewModel @Inject constructor(
 
 
             NoteEvent.closeDetail -> {
-             _state.update {
-                 it.copy(
-                     isAddingNote = false
-                 )
-             }
-            }
-
-            NoteEvent.openDetail -> {
                 _state.update {
                     it.copy(
-                        isAddingNote = true
+                        title = "",
+                        description = "",
+                        type = NoteType.JournalEntry,
+                        isAddingNote = false
+                    )
+                }
+            }
+
+            is NoteEvent.openDetail -> {
+                _state.update{
+                    it.copy(
+                        isAddingNote = true,
+                        title = event.title,
+                        description = event.description,
+                        color = event.color
                     )
                 }
             }
@@ -133,6 +166,16 @@ class NoteViewModel @Inject constructor(
                     it.copy(
                         color = event.color
                     )
+                }
+            }
+
+            is NoteEvent.SelectNote -> {
+                viewModelScope.launch{
+                    dao.selectNoteWithId(event.id).collectLatest{ note ->
+                        _selectedNote.update {
+                         note
+                        }
+                    }
                 }
             }
         }

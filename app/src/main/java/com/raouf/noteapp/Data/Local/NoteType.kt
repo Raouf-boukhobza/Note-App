@@ -1,8 +1,8 @@
 package com.raouf.noteapp.Data.Local
 
 enum class NoteType {
-    Reminder,
+    JournalEntry,
     ToDopList,
+    Reminder,
     EventPlaning,
-    JournalEntry
 }

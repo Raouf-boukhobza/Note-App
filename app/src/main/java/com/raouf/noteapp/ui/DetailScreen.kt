@@ -37,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.raouf.noteapp.Data.Local.Note
+import com.raouf.noteapp.Data.Local.NoteDb
 import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.ViewModel.NoteEvent
 import com.raouf.noteapp.ViewModel.NoteState
@@ -54,10 +56,7 @@ fun DetailScreen(
     state: State<NoteState>,
     onEvent: (NoteEvent) -> Unit
 ){
-    id?.let {
-        val idInt = id.toInt()
-        val note = onEvent(NoteEvent.SelectNote(idInt))
-    }
+    val note : Note
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
@@ -69,12 +68,15 @@ fun DetailScreen(
                     containerColor = Color.Black
                 ),
                 actions = {
-                    Button(onClick = { onEvent(NoteEvent.SavaNote)}){
+                    Button(onClick = {
+                        if (id == null) onEvent(NoteEvent.SaveNote)
+                    else onEvent(NoteEvent.SavaUpdate(id.toInt()))
+                    }
+                    ){
                         Text(
-                            text = "Save" ,
+                            text = "Save",
                             color = Color.White,
                         )
-
                     }
                 }
             )
@@ -98,8 +100,7 @@ fun DetailScreen(
                 NoteType.entries.forEach { type ->
                     TypeButton(type = type,
                         onButtonClick = {event ->
-                        onEvent(event)
-                                        } ,
+                        onEvent(event) } ,
                         state = state
                     )
                 }

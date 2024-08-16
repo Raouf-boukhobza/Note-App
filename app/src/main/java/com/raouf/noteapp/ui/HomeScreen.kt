@@ -1,6 +1,7 @@
 package com.raouf.noteapp.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -70,16 +71,17 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = Color.Black
-                )
+                ),
+                modifier = Modifier.padding(top = 8.dp)
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(
                     Detail(
-                    id = 1
-                )
-                ) },
+                        id = null
+                    )
+                )},
                 containerColor = Color.White,
 
                 ) {
@@ -103,7 +105,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(state = rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Sort.entries.forEach { sortType ->
 
@@ -129,20 +131,23 @@ fun HomeScreen(
             ) {
                 val list = state.value.noteList
 
-                    items(list) { note ->
+                    items(list){ note ->
                         NotesView(
                             title = note.title,
                             description = note.description,
                             color = Color(note.color),
+                            onNoteClick = {
+                              event(NoteEvent.openDetail(note.title , note.description ,Color(note.color)))
+                              navController.navigate(
+                                  Detail(
+                                      id = note.id.toString()
+                                  )
+                              )
+                            }
                         )
                     }
-
-
-
             }
-
         }
-
     }
 }
 
@@ -154,7 +159,6 @@ private fun SortButton(
     onButtonClick : (NoteEvent) -> Unit,
     state: State<NoteState>
 ){
-
     var buttoncolor =  Color.Transparent
     var border: BorderStroke? = BorderStroke(1.dp , Color.Gray)
     var noteNumber = ""
@@ -193,10 +197,12 @@ private fun SortButton(
 private fun NotesView(
     title : String,
     description: String,
-    color: Color
+    color: Color,
+    onNoteClick : () -> Unit
 ){
     Surface(
-        modifier = Modifier.width(170.dp),
+        modifier = Modifier.width(170.dp)
+            .clickable { onNoteClick() },
         color = color,
         shape = RoundedCornerShape(18.dp)
     ){

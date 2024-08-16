@@ -19,25 +19,33 @@ fun MyNavHost(
     NavHost(
         navController = navController ,
         startDestination = Home
-    ){
-     composable<Home> {
-         HomeScreen(event = viewModel::onEvent , state = viewModel.state.collectAsState() , navController )
-     }
-
-     composable<Detail> {
-         val argn = it.toRoute<Detail>()
-         DetailScreen(
-             id = argn.id
-         )
-     }
-
+    ) {
+        composable<Home> {
+            HomeScreen(
+                event = viewModel::onEvent,
+                state = viewModel.state.collectAsState(),
+                navController = navController )
+        }
+        composable<Detail> {
+            val args = it.toRoute<Detail>()
+            DetailScreen(
+                id =args.id ,
+                viewModel.state.collectAsState(),
+                viewModel::onEvent
+            )
+        }
     }
 
+
 }
+
+
 @Serializable
 object Home
 
 @Serializable
-data class Detail(val id : Int)
+data class Detail(val id : String?)
+
+
 
 
