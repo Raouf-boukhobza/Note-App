@@ -20,5 +20,7 @@ sealed interface NoteEvent {
     data object openDetail : NoteEvent
     data object closeDetail : NoteEvent
     data class SortType(val sortType : Sort) : NoteEvent
+    data object OpenDialog : NoteEvent
+    data object CloseDialog : NoteEvent
 
 }

@@ -6,7 +6,6 @@ import androidx.room.TypeConverter
 
 class NoteTypeConverter {
 
-
     @TypeConverter
     fun fromNoteType(noteType: NoteType): String {
         return noteType.name // Convert enum to its name as a string

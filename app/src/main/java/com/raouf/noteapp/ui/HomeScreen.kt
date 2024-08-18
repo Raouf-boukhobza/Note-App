@@ -1,7 +1,8 @@
 package com.raouf.noteapp.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -102,7 +105,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .horizontalScroll(state = rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
+            ){
                 Sort.entries.forEach { sortType ->
 
                     SortButton(
@@ -116,9 +119,9 @@ fun HomeScreen(
                 }
 
             }
-
+            
             Spacer(modifier = Modifier.height(25.dp))
-
+            
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -134,15 +137,25 @@ fun HomeScreen(
                             color = Color(note.color),
                             onNoteClick = {
                                 onEvent(NoteEvent.openDetail)
-                              navController.navigate(
+                                navController.navigate(
                                   Detail(
                                       id = note.id.toString()
                                   )
                               )
+                            },
+                            onLongClick = {
+                                onEvent(NoteEvent.OpenDialog)
                             }
                         )
+                        if (state.value.isDeletingNote){
+                            DeleteDialog(Cancel = { onEvent(NoteEvent.CloseDialog) }) {
+                                onEvent(NoteEvent.DeleteNote(note))
+                            }
+                        }
                     }
             }
+
+
         }
     }
 }
@@ -189,16 +202,26 @@ private fun SortButton(
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NotesView(
     title : String,
     description: String,
     color: Color,
-    onNoteClick : () -> Unit
+    onNoteClick : () -> Unit,
+    onLongClick : () -> Unit
 ){
     Surface(
-        modifier = Modifier.width(170.dp)
-            .clickable { onNoteClick() },
+        modifier = Modifier
+            .width(170.dp)
+            .combinedClickable(
+                onClick = {
+                    onNoteClick()
+                },
+                onLongClick = {
+                    onLongClick()
+                }
+            ),
         color = color,
         shape = RoundedCornerShape(18.dp)
     ){
@@ -210,7 +233,8 @@ private fun NotesView(
            Text(
                text = title,
                fontSize = 22.sp,
-               fontWeight = FontWeight.Bold)
+               fontWeight = FontWeight.Bold
+           )
              Text(
                  text = description,
                  fontSize = 18.sp,
@@ -218,6 +242,46 @@ private fun NotesView(
              )
          }
     }
+}
+
+
+@Composable
+fun DeleteDialog(
+    Cancel : () -> Unit,
+    Confirme: () -> Unit
+){
+    AlertDialog(
+        onDismissRequest = {Cancel() },
+        dismissButton = {
+            Button(onClick = { Cancel()}) {
+                Text(text = "Cancel" ,
+                    color = Color.White
+                )
+            }
+        },
+        confirmButton = { Button(onClick = { Confirme() }) {
+            Text(text = "Delete" ,
+                fontWeight = FontWeight.Medium,
+                color = Color.Red
+            )
+        } },
+        title = {
+            Text(
+                text = "Delete this Note",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.White
+            )
+        },
+        text = {
+            Text(
+                text = "Are You Sure you went to delete this note ?",
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+        },
+        containerColor = Color.DarkGray,
+    )
 }
 
 

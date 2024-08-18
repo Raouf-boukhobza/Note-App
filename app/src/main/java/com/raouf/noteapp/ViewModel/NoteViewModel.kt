@@ -81,6 +81,11 @@ class NoteViewModel @Inject constructor(
                 viewModelScope.launch {
                     dao.deleteNote(event.note)
                 }
+                _state.update {
+                    it.copy(
+                        isDeletingNote = false
+                    )
+                }
             }
 
 
@@ -174,7 +179,20 @@ class NoteViewModel @Inject constructor(
 
                 }
             }
-
+            NoteEvent.CloseDialog -> {
+                _state.update {
+                    it.copy(
+                        isDeletingNote = false
+                    )
+                }
+            }
+            NoteEvent.OpenDialog -> {
+                    _state.update {
+                        it.copy(
+                            isDeletingNote = true
+                        )
+                    }
+            }
         }
     }
 
