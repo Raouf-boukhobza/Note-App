@@ -24,5 +24,5 @@ interface NoteDao {
 
 
     @Query("SELECT * FROM note WHERE id = :id")
-    fun selectNoteWithId(id : Int) : Flow<Note>
+    fun selectNoteWithId(id : Int) : Note
 }

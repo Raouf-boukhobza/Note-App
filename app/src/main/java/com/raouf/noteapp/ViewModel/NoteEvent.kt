@@ -17,7 +17,7 @@ sealed interface NoteEvent {
     data class AddColor(val color : Color) : NoteEvent
     data class DeleteNote(val note: Note) : NoteEvent
     data class SelectNote(val id : Int) : NoteEvent
-    data class openDetail(val title: String  ,val  description: String ,val  color : Color) : NoteEvent
+    data object openDetail : NoteEvent
     data object closeDetail : NoteEvent
     data class SortType(val sortType : Sort) : NoteEvent
 

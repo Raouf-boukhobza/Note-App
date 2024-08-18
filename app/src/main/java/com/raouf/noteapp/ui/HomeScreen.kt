@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -38,22 +37,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.raouf.noteapp.Data.Local.Note
 import com.raouf.noteapp.Data.Local.Sort
 import com.raouf.noteapp.ViewModel.NoteEvent
 import com.raouf.noteapp.ViewModel.NoteState
-import com.raouf.noteapp.ui.theme.pink
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    event : (NoteEvent) -> Unit,
+    onEvent : (NoteEvent) -> Unit,
     state: State<NoteState>,
     navController: NavHostController
 ) {
@@ -77,11 +72,12 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(
+                onClick = {onEvent(NoteEvent.openDetail)
+                    navController.navigate(
                     Detail(
                         id = null
                     )
-                )},
+                ) },
                 containerColor = Color.White,
 
                 ) {
@@ -112,7 +108,7 @@ fun HomeScreen(
                     SortButton(
                         sortType = sortType,
                         onButtonClick = { noteEvent ->
-                            event(noteEvent)
+                            onEvent(noteEvent)
                         },
                         state = state
                     )
@@ -128,7 +124,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 state = rememberLazyGridState()
-            ) {
+            ){
                 val list = state.value.noteList
 
                     items(list){ note ->
@@ -137,7 +133,7 @@ fun HomeScreen(
                             description = note.description,
                             color = Color(note.color),
                             onNoteClick = {
-                              event(NoteEvent.openDetail(note.title , note.description ,Color(note.color)))
+                                onEvent(NoteEvent.openDetail)
                               navController.navigate(
                                   Detail(
                                       id = note.id.toString()

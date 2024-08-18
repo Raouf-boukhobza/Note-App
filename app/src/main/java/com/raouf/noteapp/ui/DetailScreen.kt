@@ -37,8 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.raouf.noteapp.Data.Local.Note
-import com.raouf.noteapp.Data.Local.NoteDb
+import androidx.navigation.NavHostController
 import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.ViewModel.NoteEvent
 import com.raouf.noteapp.ViewModel.NoteState
@@ -54,9 +53,14 @@ import com.raouf.noteapp.ui.theme.pink
 fun DetailScreen(
     id : String?,
     state: State<NoteState>,
-    onEvent: (NoteEvent) -> Unit
+    onEvent: (NoteEvent) -> Unit,
+    navController: NavHostController
 ){
-    val note : Note
+
+    id?.let {
+        onEvent(NoteEvent.SelectNote(id.toInt()))
+    }
+
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
@@ -70,7 +74,8 @@ fun DetailScreen(
                 actions = {
                     Button(onClick = {
                         if (id == null) onEvent(NoteEvent.SaveNote)
-                    else onEvent(NoteEvent.SavaUpdate(id.toInt()))
+                        else onEvent(NoteEvent.SavaUpdate(id.toInt()))
+                        navController.popBackStack()
                     }
                     ){
                         Text(

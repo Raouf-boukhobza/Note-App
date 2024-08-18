@@ -22,7 +22,7 @@ fun MyNavHost(
     ) {
         composable<Home> {
             HomeScreen(
-                event = viewModel::onEvent,
+                onEvent = viewModel::onEvent,
                 state = viewModel.state.collectAsState(),
                 navController = navController )
         }
@@ -31,7 +31,8 @@ fun MyNavHost(
             DetailScreen(
                 id =args.id ,
                 viewModel.state.collectAsState(),
-                viewModel::onEvent
+                viewModel::onEvent,
+                navController
             )
         }
     }
