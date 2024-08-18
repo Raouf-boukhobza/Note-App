@@ -1,5 +1,6 @@
 package com.raouf.noteapp
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,17 +10,19 @@ import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.Data.Local.Sort
 import com.raouf.noteapp.ViewModel.NoteEvent
 import com.raouf.noteapp.ViewModel.NoteState
+import com.raouf.noteapp.ui.theme.pink
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -30,7 +33,6 @@ class NoteViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(NoteState())
     private val _sortType = MutableStateFlow(Sort.All)
-    private val _selectedNote = MutableStateFlow<Note?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _noteList : StateFlow<List<Note>> = _sortType.flatMapLatest{ sorttype ->
@@ -92,19 +94,11 @@ class NoteViewModel @Inject constructor(
                 val note = Note(
                     title = title,
                     description = description,
-                    type = type.toString(),
+                    type = type,
                     color = color.toArgb()
                 )
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO){
                     dao.addNote(note)
-                }
-                _state.update {
-                    it.copy(
-                        title = "",
-                        description = "",
-                        type = NoteType.JournalEntry,
-                        isAddingNote = false
-                    )
                 }
             }
 
@@ -118,20 +112,14 @@ class NoteViewModel @Inject constructor(
                     id = event.id,
                     title = title,
                     description = description,
-                    type = type.toString(),
+                    type = type,
                     color = color.toArgb()
                 )
-                viewModelScope.launch {
+
+                viewModelScope.launch(Dispatchers.IO){
                     dao.addNote(note)
                 }
-                _state.update {
-                    it.copy(
-                        title = "",
-                        description = "",
-                        type = NoteType.JournalEntry,
-                        isAddingNote = false
-                    )
-                }
+
             }
 
 
@@ -141,18 +129,16 @@ class NoteViewModel @Inject constructor(
                         title = "",
                         description = "",
                         type = NoteType.JournalEntry,
-                        isAddingNote = false
                     )
                 }
             }
 
-            is NoteEvent.openDetail -> {
+            NoteEvent.openDetail -> {
                 _state.update{
                     it.copy(
-                        isAddingNote = true,
-                        title = event.title,
-                        description = event.description,
-                        color = event.color
+                     title = "",
+                     description = "",
+                     color = pink
                     )
                 }
             }
@@ -170,14 +156,25 @@ class NoteViewModel @Inject constructor(
             }
 
             is NoteEvent.SelectNote -> {
-                viewModelScope.launch{
-                    dao.selectNoteWithId(event.id).collectLatest{ note ->
-                        _selectedNote.update {
-                         note
+                viewModelScope.launch(Dispatchers.IO){
+                     val note =  dao.selectNoteWithId(event.id)
+                    withContext(Dispatchers.Main){
+                        note.let {
+                            _state.update {
+                                it.copy(
+                                    title = note.title,
+                                    description = note.description,
+                                    color = Color(note.color),
+                                    type = note.type
+                                )
+                            }
+
                         }
                     }
+
                 }
             }
+
         }
     }
 
