@@ -2,6 +2,8 @@ package com.raouf.noteapp.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -37,8 +40,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -245,42 +251,63 @@ private fun NotesView(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteDialog(
     Cancel : () -> Unit,
     Confirme: () -> Unit
 ){
     AlertDialog(
-        onDismissRequest = {Cancel() },
-        dismissButton = {
-            Button(onClick = { Cancel()}) {
-                Text(text = "Cancel" ,
-                    color = Color.White
-                )
-            }
+        onDismissRequest = {Cancel()},
+        content = {
+                  Column(horizontalAlignment = Alignment.CenterHorizontally ,
+                      verticalArrangement = Arrangement.spacedBy(8.dp),
+                      modifier = Modifier.background(color = Color.DarkGray)
+                          .padding(16.dp)){
+                      Text(
+                          text = "Delete this Note",
+                          fontSize = 24.sp,
+                          fontWeight = FontWeight.Medium,
+                          color = Color.White
+                      )
+                      Text(
+                          text = "Are You Sure you went to \n delete this note ?",
+                          fontSize = 16.sp,
+                          color = Color.LightGray,
+                          textAlign = TextAlign.Center
+                      )
+                      Spacer(modifier = Modifier.height(75.dp))
+
+                      Button(onClick = { Confirme() } ,
+                          modifier = Modifier.fillMaxWidth(),
+                          shape = RoundedCornerShape(12.dp),
+                          colors = ButtonDefaults.buttonColors(
+                              Color.White
+                          )) {
+                          Text(
+                              text = "Delete" ,
+                              fontWeight = FontWeight.Bold,
+                              color = Color.Red,
+                              fontSize = 16.sp
+
+                          )
+                      }
+                      Button(onClick = { Cancel()},
+                          modifier = Modifier
+                              .fillMaxWidth(),
+                          colors = ButtonDefaults.buttonColors(
+                              Color.Transparent
+                          )) {
+                          Text(
+                              text = "Cancel",
+                              color = Color.White
+                          )
+                      }
+                  }
         },
-        confirmButton = { Button(onClick = { Confirme() }) {
-            Text(text = "Delete" ,
-                fontWeight = FontWeight.Medium,
-                color = Color.Red
-            )
-        } },
-        title = {
-            Text(
-                text = "Delete this Note",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.White
-            )
-        },
-        text = {
-            Text(
-                text = "Are You Sure you went to delete this note ?",
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-        },
-        containerColor = Color.DarkGray,
+        modifier = Modifier
+            .size(300.dp)
+            .clip(shape = RoundedCornerShape(24.dp))
     )
 }
 
