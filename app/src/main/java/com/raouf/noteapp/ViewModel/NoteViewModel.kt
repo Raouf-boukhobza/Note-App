@@ -130,25 +130,8 @@ class NoteViewModel @Inject constructor(
             }
 
 
-            NoteEvent.closeDetail -> {
-                _state.update {
-                    it.copy(
-                        title = "",
-                        description = "",
-                        type = NoteType.JournalEntry,
-                    )
-                }
-            }
 
-            NoteEvent.openDetail -> {
-                _state.update{
-                    it.copy(
-                     title = "",
-                     description = "",
-                     color = pink
-                    )
-                }
-            }
+
 
             is NoteEvent.SortType -> {
                 _sortType.value = event.sortType
@@ -194,6 +177,16 @@ class NoteViewModel @Inject constructor(
                             isDeletingNote = true
                         )
                     }
+            }
+
+            NoteEvent.openDetail -> {
+                _state.update {
+                    it.copy(
+                        title = "",
+                        description = "",
+                        type = NoteType.JournalEntry,
+                    )
+                }
             }
         }
     }

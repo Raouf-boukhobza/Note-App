@@ -14,7 +14,6 @@ data class NoteState(
     val description : String = "",
     val color : Color = green,
     var type : NoteType = NoteType.JournalEntry,
-    val isAddingNote : Boolean = false,
     val isDeletingNote : Boolean =false,
     var Sort : Sort = com.raouf.noteapp.Data.Local.Sort.All
 )

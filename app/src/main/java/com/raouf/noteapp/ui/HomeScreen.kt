@@ -147,7 +147,6 @@ fun HomeScreen(
             ){
                 val list = state.value.noteList
 
-
                     items(list){ note ->
                         NotesView(
                             title = note.title,
@@ -168,7 +167,6 @@ fun HomeScreen(
                         )
                         if (state.value.isDeletingNote){
                             DeleteDialog(Cancel = { onEvent(NoteEvent.CloseDialog) }) {
-                                visible = false
                                 onEvent(NoteEvent.DeleteNote(note))
                             }
                         }
@@ -235,9 +233,7 @@ private fun NotesView(
 
     AnimatedVisibility(visible = isvisible,
         exit = fadeOut(animationSpec = tween(durationMillis = 300))
-            .also { (scaleOut(animationSpec = tween(durationMillis = 500)) )}
-
-            ) {
+            .plus(scaleOut(animationSpec = tween(durationMillis = 500)))) {
         Surface(
             modifier = Modifier
                 .width(170.dp)
