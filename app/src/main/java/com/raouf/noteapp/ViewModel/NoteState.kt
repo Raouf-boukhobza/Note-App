@@ -10,11 +10,6 @@ import com.raouf.noteapp.ui.theme.green
 
 data class NoteState(
     val noteList : List<Note> = emptyList(),
-    val title: String = "",
-    val description : String = "",
-    val color : Color = green,
-    var type : NoteType = NoteType.JournalEntry,
-    val date : String = "",
     val isDeletingNote : Boolean =false,
     var Sort : Sort = com.raouf.noteapp.Data.Local.Sort.All
 )

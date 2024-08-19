@@ -8,6 +8,7 @@ import com.raouf.noteapp.Data.Local.Note
 import com.raouf.noteapp.Data.Local.NoteDao
 import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.Data.Local.Sort
+import com.raouf.noteapp.ViewModel.DetailEvent
 import com.raouf.noteapp.ViewModel.NoteEvent
 import com.raouf.noteapp.ViewModel.NoteState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,29 +57,7 @@ class NoteViewModel @Inject constructor(
     fun onEvent(event: NoteEvent){
         when (event){
 
-            is NoteEvent.AddDescription ->{
-                _state.update {
-                    it.copy(
-                        description = event.description
-                    )
-                }
-            }
 
-            is NoteEvent.AddTitle -> {
-                _state.update {
-                    it.copy(
-                        title = event.title
-                    )
-                }
-            }
-
-            is NoteEvent.AddType -> {
-                _state.update {
-                    it.copy(
-                        type = event.type
-                    )
-                }
-            }
 
             is NoteEvent.DeleteNote -> {
                 viewModelScope.launch {
@@ -91,87 +70,10 @@ class NoteViewModel @Inject constructor(
                     )
                 }
             }
-
-
-
-            NoteEvent.SaveNote -> {
-                val title = state.value.title
-                val description = state.value.description
-                val type = state.value.type
-                val color = state.value.color
-                val date = getCurrentTime()
-
-                val note = Note(
-                    title = title,
-                    description = description,
-                    type = type,
-                    color = color.toArgb(),
-                    date = date
-
-                )
-                viewModelScope.launch(Dispatchers.IO){
-                    dao.addNote(note)
-                }
-            }
-
-            is NoteEvent.SavaUpdate-> {
-                val title = state.value.title
-                val description = state.value.description
-                val type = state.value.type
-                val color = state.value.color
-                val date = getCurrentTime()
-
-                val note = Note(
-                    id = event.id,
-                    title = title,
-                    description = description,
-                    type = type,
-                    color = color.toArgb(),
-                    date = date
-                )
-
-                viewModelScope.launch(Dispatchers.IO){
-                    dao.addNote(note)
-                }
-
-            }
-
-
-
-
-
             is NoteEvent.SortType -> {
                 _sortType.value = event.sortType
             }
 
-            is NoteEvent.AddColor -> {
-                _state.update {
-                    it.copy(
-                        color = event.color
-                    )
-                }
-            }
-
-            is NoteEvent.SelectNote -> {
-                viewModelScope.launch(Dispatchers.IO){
-                     val note =  dao.selectNoteWithId(event.id)
-                    withContext(Dispatchers.Main){
-                        note.let {
-                            _state.update {
-                                it.copy(
-                                    title = note.title,
-                                    description = note.description,
-                                    color = Color(note.color),
-                                    type = note.type,
-                                    date = note.date
-                                )
-                            }
-
-                        }
-                    }
-
-                }
-            }
             NoteEvent.CloseDialog -> {
                 _state.update {
                     it.copy(
@@ -187,22 +89,7 @@ class NoteViewModel @Inject constructor(
                     }
             }
 
-            NoteEvent.OpenDetail -> {
-                _state.update {
-                    it.copy(
-                        title = "",
-                        description = "",
-                        type = NoteType.JournalEntry,
-                        date = ""
-                    )
-                }
-            }
         }
     }
 }
 
-private fun getCurrentTime() : String {
-    val currentTime = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    return currentTime.format(formatter)
-}

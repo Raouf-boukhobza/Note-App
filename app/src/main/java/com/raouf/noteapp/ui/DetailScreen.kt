@@ -19,10 +19,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -39,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.raouf.noteapp.Data.Local.NoteType
-import com.raouf.noteapp.ViewModel.NoteEvent
-import com.raouf.noteapp.ViewModel.NoteState
+import com.raouf.noteapp.ViewModel.DetailEvent
+import com.raouf.noteapp.ViewModel.DetailState
 import com.raouf.noteapp.ui.theme.deepPurple
 import com.raouf.noteapp.ui.theme.green
 import com.raouf.noteapp.ui.theme.lightBlue
@@ -51,14 +53,14 @@ import com.raouf.noteapp.ui.theme.pink
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    id : String?,
-    state: State<NoteState>,
-    onEvent: (NoteEvent) -> Unit,
+    id: String?,
+    state: State<DetailState>,
+    onEvent: (DetailEvent) -> Unit,
     navController: NavHostController
 ){
 
     id?.let {
-        onEvent(NoteEvent.SelectNote(id.toInt()))
+        onEvent(DetailEvent.SelectNote(id.toInt()))
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -66,22 +68,23 @@ fun DetailScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back to home screen" )
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back to home screen" )
+                    }
+
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = Color.Black
                 ),
                 actions = {
-                    Button(onClick = {
-                        if (id == null) onEvent(NoteEvent.SaveNote)
-                        else onEvent(NoteEvent.SavaUpdate(id.toInt()))
+                    IconButton(onClick = {
+                        if (id == null) onEvent(DetailEvent.SaveNote)
+                        else onEvent(DetailEvent.SavaUpdate(id.toInt()))
                         navController.popBackStack()
-                    }
-                    ){
-                        Text(
-                            text = "Save",
-                            color = Color.White,
-                        )
+                    },
+                       ) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = "save note",
+                            modifier = Modifier.size(30.dp))
                     }
                 }
             )
@@ -105,14 +108,15 @@ fun DetailScreen(
                 NoteType.entries.forEach { type ->
                     TypeButton(type = type,
                         onButtonClick = {event ->
-                        onEvent(event) } ,
+                        onEvent(event)
+                                        } ,
                         state = state
                     )
                 }
             }
             OutlinedTextField(
                 value = state.value.title , onValueChange = {
-                    onEvent(NoteEvent.AddTitle(it))
+                    onEvent(DetailEvent.AddTitle(it))
                 },
                 textStyle = TextStyle(
                     fontSize = 32.sp
@@ -134,7 +138,7 @@ fun DetailScreen(
             OutlinedTextField(
                 value = state.value.description,
                 onValueChange ={
-                    onEvent(NoteEvent.AddDescription(it))
+                    onEvent(DetailEvent.AddDescription(it))
                 },
                 textStyle = TextStyle(
                     fontSize = 20.sp
@@ -158,7 +162,7 @@ fun DetailScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly){
              NoteColors(
                  state = state,
-                 onColorchange = {event ->
+                 onColorchange = { event ->
                      onEvent(event)
                  }
              )
@@ -169,8 +173,8 @@ fun DetailScreen(
 
 @Composable
 fun NoteColors(
-    state: State<NoteState>,
-    onColorchange : (NoteEvent) -> Unit
+    state: State<DetailState>,
+    onColorchange : (DetailEvent) -> Unit
 ){
 
     val colors = listOf(pink , green , orange , lightBlue , deepPurple)
@@ -181,7 +185,7 @@ fun NoteColors(
             .background(color = color)
             .selectable(
                 selected = color == state.value.color,
-                onClick = { onColorchange(NoteEvent.AddColor(color)) }
+                onClick = { onColorchange(DetailEvent.AddColor(color)) }
             )
             .border(
                 width = if (color == state.value.color) 2.5.dp
@@ -196,8 +200,8 @@ fun NoteColors(
 @Composable
 private fun TypeButton(
     type : NoteType,
-    onButtonClick : (NoteEvent) -> Unit,
-    state: State<NoteState>
+    onButtonClick : (DetailEvent) -> Unit,
+    state: State<DetailState>
 ){
     var buttoncolor =  Color.Transparent
     var border: BorderStroke? = BorderStroke(1.dp , Color.Gray)
@@ -209,7 +213,7 @@ private fun TypeButton(
         textColor= state.value.color
     }
     Button(
-        onClick = { onButtonClick(NoteEvent.AddType(type)) },
+        onClick = { onButtonClick(DetailEvent.AddType(type)) },
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
             buttoncolor
@@ -218,7 +222,7 @@ private fun TypeButton(
         modifier = Modifier
             .selectable(
                 selected = type == state.value.type,
-                onClick = {onButtonClick(NoteEvent.AddType(type))}
+                onClick = {onButtonClick(DetailEvent.AddType(type))}
             )
     ){
         Text(

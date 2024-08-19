@@ -7,13 +7,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.raouf.noteapp.NoteViewModel
+import com.raouf.noteapp.ViewModel.DetailViewModel
 import kotlinx.serialization.Serializable
 
 
 @Composable
 fun MyNavHost(
     navController: NavHostController,
-    viewModel: NoteViewModel
+    homeViewModel : NoteViewModel,
+    detailViewModel : DetailViewModel
 ){
 
     NavHost(
@@ -22,16 +24,17 @@ fun MyNavHost(
     ) {
         composable<Home> {
             HomeScreen(
-                onEvent = viewModel::onEvent,
-                state = viewModel.state.collectAsState(),
+                onEvent = homeViewModel::onEvent,
+                state = homeViewModel.state.collectAsState(),
                 navController = navController )
         }
+
         composable<Detail> {
             val args = it.toRoute<Detail>()
             DetailScreen(
                 id =args.id ,
-                viewModel.state.collectAsState(),
-                viewModel::onEvent,
+                detailViewModel.state.collectAsState(),
+                detailViewModel::onEvent,
                 navController
             )
         }

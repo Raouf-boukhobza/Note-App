@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.raouf.noteapp.NoteViewModel
+import com.raouf.noteapp.ViewModel.DetailViewModel
 import com.raouf.noteapp.ui.theme.NoteAppTheme
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
    private val  viewModel  : NoteViewModel by viewModels()
+    private val DetailViewModel : DetailViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,7 +28,7 @@ class MainActivity : ComponentActivity() {
 
             NoteAppTheme {
                 val navController = rememberNavController()
-                MyNavHost(navController = navController, viewModel = viewModel )
+                MyNavHost(navController = navController, homeViewModel = viewModel , detailViewModel = DetailViewModel )
             }
         }
     }

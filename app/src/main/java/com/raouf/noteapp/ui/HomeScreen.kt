@@ -46,6 +46,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -87,14 +88,13 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {onEvent(NoteEvent.OpenDetail)
+                onClick = {
                     navController.navigate(
                     Detail(
                         id = null
                     )
                 ) },
                 containerColor = Color.White,
-
                 ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -133,7 +133,7 @@ fun HomeScreen(
             }
             
             Spacer(modifier = Modifier.height(25.dp))
-            val visible by remember {
+            var visible by remember {
                 mutableStateOf(true)
             }
             
@@ -151,7 +151,6 @@ fun HomeScreen(
                             description = note.description,
                             color = Color(note.color),
                             onNoteClick = {
-                                onEvent(NoteEvent.OpenDetail)
                                 navController.navigate(
                                   Detail(
                                       id = note.id.toString()
@@ -165,7 +164,10 @@ fun HomeScreen(
                             date = note.date
                         )
                         if (state.value.isDeletingNote){
-                            DeleteDialog(cancel = { onEvent(NoteEvent.CloseDialog) }) {
+
+                            DeleteDialog(
+                                cancel = { onEvent(NoteEvent.CloseDialog) }) {
+                                visible = false
                                 onEvent(NoteEvent.DeleteNote(note))
                             }
                         }
@@ -231,7 +233,8 @@ private fun NotesView(
     date : String
 ){
 
-    AnimatedVisibility(visible = isvisible,
+    AnimatedVisibility(
+        visible = isvisible,
         exit = fadeOut(animationSpec = tween(durationMillis = 300))
             .plus(scaleOut(animationSpec = tween(durationMillis = 500)))) {
         Surface(
