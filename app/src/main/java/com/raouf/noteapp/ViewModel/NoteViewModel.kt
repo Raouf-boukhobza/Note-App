@@ -10,7 +10,6 @@ import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.Data.Local.Sort
 import com.raouf.noteapp.ViewModel.NoteEvent
 import com.raouf.noteapp.ViewModel.NoteState
-import com.raouf.noteapp.ui.theme.pink
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +23,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -53,7 +54,8 @@ class NoteViewModel @Inject constructor(
 
 
     fun onEvent(event: NoteEvent){
-        when(event){
+        when (event){
+
             is NoteEvent.AddDescription ->{
                 _state.update {
                     it.copy(
@@ -97,12 +99,15 @@ class NoteViewModel @Inject constructor(
                 val description = state.value.description
                 val type = state.value.type
                 val color = state.value.color
+                val date = getCurrentTime()
 
                 val note = Note(
                     title = title,
                     description = description,
                     type = type,
-                    color = color.toArgb()
+                    color = color.toArgb(),
+                    date = date
+
                 )
                 viewModelScope.launch(Dispatchers.IO){
                     dao.addNote(note)
@@ -114,13 +119,15 @@ class NoteViewModel @Inject constructor(
                 val description = state.value.description
                 val type = state.value.type
                 val color = state.value.color
+                val date = getCurrentTime()
 
                 val note = Note(
                     id = event.id,
                     title = title,
                     description = description,
                     type = type,
-                    color = color.toArgb()
+                    color = color.toArgb(),
+                    date = date
                 )
 
                 viewModelScope.launch(Dispatchers.IO){
@@ -155,7 +162,8 @@ class NoteViewModel @Inject constructor(
                                     title = note.title,
                                     description = note.description,
                                     color = Color(note.color),
-                                    type = note.type
+                                    type = note.type,
+                                    date = note.date
                                 )
                             }
 
@@ -179,16 +187,22 @@ class NoteViewModel @Inject constructor(
                     }
             }
 
-            NoteEvent.openDetail -> {
+            NoteEvent.OpenDetail -> {
                 _state.update {
                     it.copy(
                         title = "",
                         description = "",
                         type = NoteType.JournalEntry,
+                        date = ""
                     )
                 }
             }
         }
     }
+}
 
+private fun getCurrentTime() : String {
+    val currentTime = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    return currentTime.format(formatter)
 }

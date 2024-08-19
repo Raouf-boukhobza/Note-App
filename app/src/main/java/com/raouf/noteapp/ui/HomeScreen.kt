@@ -11,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,15 +46,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -89,7 +87,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {onEvent(NoteEvent.openDetail)
+                onClick = {onEvent(NoteEvent.OpenDetail)
                     navController.navigate(
                     Detail(
                         id = null
@@ -135,7 +133,7 @@ fun HomeScreen(
             }
             
             Spacer(modifier = Modifier.height(25.dp))
-            var visible by remember {
+            val visible by remember {
                 mutableStateOf(true)
             }
             
@@ -153,7 +151,7 @@ fun HomeScreen(
                             description = note.description,
                             color = Color(note.color),
                             onNoteClick = {
-                                onEvent(NoteEvent.openDetail)
+                                onEvent(NoteEvent.OpenDetail)
                                 navController.navigate(
                                   Detail(
                                       id = note.id.toString()
@@ -163,16 +161,16 @@ fun HomeScreen(
                             onLongClick = {
                                 onEvent(NoteEvent.OpenDialog)
                             },
-                            isvisible = visible
+                            isvisible = visible,
+                            date = note.date
                         )
                         if (state.value.isDeletingNote){
-                            DeleteDialog(Cancel = { onEvent(NoteEvent.CloseDialog) }) {
+                            DeleteDialog(cancel = { onEvent(NoteEvent.CloseDialog) }) {
                                 onEvent(NoteEvent.DeleteNote(note))
                             }
                         }
                     }
             }
-
 
         }
     }
@@ -220,6 +218,7 @@ private fun SortButton(
 }
 
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NotesView(
@@ -228,7 +227,8 @@ private fun NotesView(
     color: Color,
     onNoteClick : () -> Unit,
     onLongClick : () -> Unit,
-    isvisible : Boolean
+    isvisible : Boolean,
+    date : String
 ){
 
     AnimatedVisibility(visible = isvisible,
@@ -263,6 +263,21 @@ private fun NotesView(
                     fontSize = 18.sp,
                     maxLines = 3
                 )
+
+                Box(
+                    modifier = Modifier.border(width = 1.dp ,
+                    color = Color.Gray ,
+                    shape = RoundedCornerShape(24.dp)
+                ).padding(horizontal = 6.dp , vertical = 4.dp)
+                        .align(Alignment.End)
+                ){
+                    Text(
+                        text = date,
+                        fontSize = 12.sp,
+                        color = Color.DarkGray
+                    )
+                }
+
             }
         }
     }
@@ -273,11 +288,11 @@ private fun NotesView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteDialog(
-    Cancel : () -> Unit,
-    Confirme: () -> Unit
+    cancel : () -> Unit,
+    confirme: () -> Unit
 ){
     AlertDialog(
-        onDismissRequest = {Cancel()},
+        onDismissRequest = {cancel()},
         content = {
                   Column(horizontalAlignment = Alignment.CenterHorizontally ,
                       verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -298,7 +313,7 @@ fun DeleteDialog(
                       )
                       Spacer(modifier = Modifier.height(75.dp))
 
-                      Button(onClick = { Confirme() } ,
+                      Button(onClick = { confirme() } ,
                           modifier = Modifier.fillMaxWidth(),
                           shape = RoundedCornerShape(12.dp),
                           colors = ButtonDefaults.buttonColors(
@@ -312,7 +327,7 @@ fun DeleteDialog(
 
                           )
                       }
-                      Button(onClick = { Cancel()},
+                      Button(onClick = { cancel()},
                           modifier = Modifier
                               .fillMaxWidth(),
                           colors = ButtonDefaults.buttonColors(

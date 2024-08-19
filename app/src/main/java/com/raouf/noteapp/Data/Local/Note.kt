@@ -10,5 +10,6 @@ data class Note(
     val color: Int,
     val title: String,
     val description: String,
-    val type: NoteType
+    val type: NoteType,
+    val date : String
 )
