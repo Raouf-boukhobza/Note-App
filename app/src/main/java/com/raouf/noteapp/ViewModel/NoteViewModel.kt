@@ -14,6 +14,7 @@ import com.raouf.noteapp.ui.theme.pink
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -79,6 +80,7 @@ class NoteViewModel @Inject constructor(
 
             is NoteEvent.DeleteNote -> {
                 viewModelScope.launch {
+                    delay(500L)
                     dao.deleteNote(event.note)
                 }
                 _state.update {

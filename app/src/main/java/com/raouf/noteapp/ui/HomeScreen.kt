@@ -1,5 +1,9 @@
 package com.raouf.noteapp.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -38,6 +42,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -127,6 +135,9 @@ fun HomeScreen(
             }
             
             Spacer(modifier = Modifier.height(25.dp))
+            var visible by remember {
+                mutableStateOf(true)
+            }
             
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -135,6 +146,7 @@ fun HomeScreen(
                 state = rememberLazyGridState()
             ){
                 val list = state.value.noteList
+
 
                     items(list){ note ->
                         NotesView(
@@ -151,10 +163,12 @@ fun HomeScreen(
                             },
                             onLongClick = {
                                 onEvent(NoteEvent.OpenDialog)
-                            }
+                            },
+                            isvisible = visible
                         )
                         if (state.value.isDeletingNote){
                             DeleteDialog(Cancel = { onEvent(NoteEvent.CloseDialog) }) {
+                                visible = false
                                 onEvent(NoteEvent.DeleteNote(note))
                             }
                         }
@@ -215,39 +229,48 @@ private fun NotesView(
     description: String,
     color: Color,
     onNoteClick : () -> Unit,
-    onLongClick : () -> Unit
+    onLongClick : () -> Unit,
+    isvisible : Boolean
 ){
-    Surface(
-        modifier = Modifier
-            .width(170.dp)
-            .combinedClickable(
-                onClick = {
-                    onNoteClick()
-                },
-                onLongClick = {
-                    onLongClick()
-                }
-            ),
-        color = color,
-        shape = RoundedCornerShape(18.dp)
-    ){
-         Column (
-             horizontalAlignment = Alignment.Start,
-             modifier = Modifier.padding(16.dp),
-             verticalArrangement = Arrangement.spacedBy(12.dp)
-         ){
-           Text(
-               text = title,
-               fontSize = 22.sp,
-               fontWeight = FontWeight.Bold
-           )
-             Text(
-                 text = description,
-                 fontSize = 18.sp,
-                 maxLines = 3
-             )
-         }
+
+    AnimatedVisibility(visible = isvisible,
+        exit = fadeOut(animationSpec = tween(durationMillis = 300))
+            .also { (scaleOut(animationSpec = tween(durationMillis = 500)) )}
+
+            ) {
+        Surface(
+            modifier = Modifier
+                .width(170.dp)
+                .combinedClickable(
+                    onClick = {
+                        onNoteClick()
+                    },
+                    onLongClick = {
+                        onLongClick()
+                    }
+                ),
+            color = color,
+            shape = RoundedCornerShape(18.dp)
+        ){
+            Column (
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ){
+                Text(
+                    text = title,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = description,
+                    fontSize = 18.sp,
+                    maxLines = 3
+                )
+            }
+        }
     }
+
 }
 
 
@@ -262,7 +285,8 @@ fun DeleteDialog(
         content = {
                   Column(horizontalAlignment = Alignment.CenterHorizontally ,
                       verticalArrangement = Arrangement.spacedBy(8.dp),
-                      modifier = Modifier.background(color = Color.DarkGray)
+                      modifier = Modifier
+                          .background(color = Color.DarkGray)
                           .padding(16.dp)){
                       Text(
                           text = "Delete this Note",
