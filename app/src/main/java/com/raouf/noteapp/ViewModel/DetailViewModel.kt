@@ -31,6 +31,7 @@ class DetailViewModel @Inject constructor(
     fun onEvent(event: DetailEvent){
 
         when(event){
+
             is DetailEvent.SelectNote-> {
                 viewModelScope.launch(Dispatchers.IO){
                     val note =  dao.selectNoteWithId(event.id)
