@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -53,9 +54,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.raouf.noteapp.Data.Local.Note
 import com.raouf.noteapp.Data.Local.Sort
 import com.raouf.noteapp.ViewModel.NoteEvent
 import com.raouf.noteapp.ViewModel.NoteState
@@ -136,49 +139,102 @@ fun HomeScreen(
             var visible by remember {
                 mutableStateOf(true)
             }
-            
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                state = rememberLazyGridState()
-            ){
-                val list = state.value.noteList
-
-                    items(list){ note ->
-                        NotesView(
-                            title = note.title,
-                            description = note.description,
-                            color = Color(note.color),
-                            onNoteClick = {
-                                navController.navigate(
-                                  Detail(
-                                      id = note.id.toString()
-                                  )
-                              )
-                            },
-                            onLongClick = {
-                                onEvent(NoteEvent.OpenDialog)
-                            },
-                            isvisible = visible,
-                            date = note.date
-                        )
-                        if (state.value.isDeletingNote){
-
-                            DeleteDialog(
-                                cancel = { onEvent(NoteEvent.CloseDialog) }) {
-                                visible = false
-                                onEvent(NoteEvent.DeleteNote(note))
-                            }
-                        }
+            var note: Note? = null
+            when(state.value.Sort){
+                Sort.All , Sort.JournalEntry  ,Sort.EventPlaning   -> {
+                    AllNote(navController = navController, list = state.value.noteList, onEvent = onEvent , visible =visible ){selectednote ->
+                        onEvent(NoteEvent.OpenDialog)
+                        note = selectednote
                     }
+                }
+
+                Sort.Reminder -> TODO()
+                Sort.ToDopList -> {
+                    ToDoList(list = state.value.noteList, done = true )
+                }
             }
+
+                if (state.value.isDeletingNote){
+                    DeleteDialog(
+                        cancel = { onEvent(NoteEvent.CloseDialog) }) {
+                        visible = false
+                        onEvent(NoteEvent.DeleteNote(note!!))
+                    }
+                }
+            
+
+
+        }
+    }
+}
+
+@Composable
+fun AllNote(
+    navController : NavHostController,
+    list : List<Note>,
+    visible : Boolean,
+    onLongClick: (Note) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        state = rememberLazyGridState()
+    ){
+
+        items(list){ note ->
+            NotesView(
+                title = note.title,
+                description = note.description,
+                color = Color(note.color),
+                onNoteClick = {
+                    navController.navigate(
+                        Detail(
+                            id = note.id.toString()
+                        )
+                    )
+                },
+                onLongClick = {
+                   onLongClick(note)
+                },
+                isvisible = visible,
+                date = note.date
+            )
+
+
 
         }
     }
 }
 
 
+
+
+@Composable
+fun ToDoList(
+    list: List<Note>,
+    done : Boolean,
+){
+    list.forEach{note ->
+        Row( modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp)
+            )
+            .background(color = Color(note.color))
+            .size(height = 70.dp , width = 150.dp),
+            verticalAlignment = Alignment.CenterVertically){
+            Checkbox(checked = done, onCheckedChange = {
+
+            })
+            Text(
+                text =note.title ,
+                fontSize = 22.sp ,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+    }
+
+}
 
 @Composable
 private fun SortButton(
@@ -268,10 +324,13 @@ private fun NotesView(
                 )
 
                 Box(
-                    modifier = Modifier.border(width = 1.dp ,
-                    color = Color.Gray ,
-                    shape = RoundedCornerShape(24.dp)
-                ).padding(horizontal = 6.dp , vertical = 4.dp)
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 4.dp)
                         .align(Alignment.End)
                 ){
                     Text(

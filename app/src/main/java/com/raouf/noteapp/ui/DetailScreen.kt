@@ -63,7 +63,7 @@ fun DetailScreen(
         onEvent(DetailEvent.SelectNote(id.toInt()))
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(),
+    Scaffold( modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {},
@@ -97,7 +97,7 @@ fun DetailScreen(
               .fillMaxSize()
               .padding(paddingValues)
               .padding(8.dp) ,
-          verticalArrangement = Arrangement.spacedBy(16.dp)){
+          verticalArrangement = Arrangement.spacedBy(14.dp)){
 
             Row(
                 modifier = Modifier
@@ -124,13 +124,13 @@ fun DetailScreen(
               shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
-                   focusedBorderColor = state.value.color,
-                    unfocusedBorderColor = state.value.color
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Black
                 ),
                placeholder = {
                     Text(
                         text = "TAB TO ADD THE TITLE",
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         color = Color.Gray
                     )
                 }
@@ -148,12 +148,12 @@ fun DetailScreen(
                     .fillMaxWidth()
                     .fillMaxHeight(0.8f),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = state.value.color,
-                    unfocusedBorderColor = state.value.color
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Black
                 ) ,
                 placeholder = {
                     Text(text = "TAB TO ADD THE DESCRIPTION",
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     color = Color.Gray
                     )
                 }

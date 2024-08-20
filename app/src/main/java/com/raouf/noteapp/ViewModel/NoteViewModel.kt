@@ -57,8 +57,6 @@ class NoteViewModel @Inject constructor(
     fun onEvent(event: NoteEvent){
         when (event){
 
-
-
             is NoteEvent.DeleteNote -> {
                 viewModelScope.launch {
                     delay(500L)
