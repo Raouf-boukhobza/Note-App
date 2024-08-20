@@ -43,6 +43,7 @@ import androidx.navigation.NavHostController
 import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.ViewModel.DetailEvent
 import com.raouf.noteapp.ViewModel.DetailState
+import com.raouf.noteapp.ViewModel.DetailViewModel
 import com.raouf.noteapp.ui.theme.deepPurple
 import com.raouf.noteapp.ui.theme.green
 import com.raouf.noteapp.ui.theme.lightBlue
@@ -68,7 +69,7 @@ fun DetailScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.popBackStack()}) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "go back to home screen" )
                     }
 
@@ -124,8 +125,8 @@ fun DetailScreen(
               shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
-                   focusedBorderColor = state.value.color,
-                    unfocusedBorderColor = state.value.color
+                   focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Black
                 ),
                placeholder = {
                     Text(
@@ -141,15 +142,15 @@ fun DetailScreen(
                     onEvent(DetailEvent.AddDescription(it))
                 },
                 textStyle = TextStyle(
-                    fontSize = 20.sp
+                    fontSize = 22.sp
                 ),
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.8f),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = state.value.color,
-                    unfocusedBorderColor = state.value.color
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Black
                 ) ,
                 placeholder = {
                     Text(text = "TAB TO ADD THE DESCRIPTION",

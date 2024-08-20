@@ -2,6 +2,7 @@ package com.raouf.noteapp.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,11 +16,10 @@ import kotlinx.serialization.Serializable
 fun MyNavHost(
     navController: NavHostController,
     homeViewModel : NoteViewModel,
-    detailViewModel : DetailViewModel
 ){
 
     NavHost(
-        navController = navController ,
+        navController = navController,
         startDestination = Home
     ) {
         composable<Home> {
@@ -30,7 +30,10 @@ fun MyNavHost(
         }
 
         composable<Detail> {
+            val detailViewModel : DetailViewModel = hiltViewModel(it)
+
             val args = it.toRoute<Detail>()
+
             DetailScreen(
                 id =args.id ,
                 detailViewModel.state.collectAsState(),

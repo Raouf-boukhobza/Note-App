@@ -133,9 +133,6 @@ fun HomeScreen(
             }
             
             Spacer(modifier = Modifier.height(25.dp))
-            var visible by remember {
-                mutableStateOf(true)
-            }
             
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -146,6 +143,9 @@ fun HomeScreen(
                 val list = state.value.noteList
 
                     items(list){ note ->
+                        var visible by remember {
+                            mutableStateOf(true)
+                        }
                         NotesView(
                             title = note.title,
                             description = note.description,
@@ -164,7 +164,6 @@ fun HomeScreen(
                             date = note.date
                         )
                         if (state.value.isDeletingNote){
-
                             DeleteDialog(
                                 cancel = { onEvent(NoteEvent.CloseDialog) }) {
                                 visible = false
@@ -297,7 +296,7 @@ fun DeleteDialog(
     AlertDialog(
         onDismissRequest = {cancel()},
         content = {
-                  Column(horizontalAlignment = Alignment.CenterHorizontally ,
+                  Column( horizontalAlignment = Alignment.CenterHorizontally ,
                       verticalArrangement = Arrangement.spacedBy(8.dp),
                       modifier = Modifier
                           .background(color = Color.DarkGray)
@@ -316,12 +315,13 @@ fun DeleteDialog(
                       )
                       Spacer(modifier = Modifier.height(75.dp))
 
-                      Button(onClick = { confirme() } ,
+                      Button( onClick = { confirme() } ,
                           modifier = Modifier.fillMaxWidth(),
                           shape = RoundedCornerShape(12.dp),
                           colors = ButtonDefaults.buttonColors(
                               Color.White
                           )) {
+
                           Text(
                               text = "Delete" ,
                               fontWeight = FontWeight.Bold,

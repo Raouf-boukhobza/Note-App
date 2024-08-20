@@ -20,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
    private val  viewModel  : NoteViewModel by viewModels()
-    private val DetailViewModel : DetailViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
             NoteAppTheme {
                 val navController = rememberNavController()
-                MyNavHost(navController = navController, homeViewModel = viewModel , detailViewModel = DetailViewModel )
+                MyNavHost(navController = navController, homeViewModel = viewModel )
             }
         }
     }
