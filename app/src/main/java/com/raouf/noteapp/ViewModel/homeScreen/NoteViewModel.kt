@@ -1,18 +1,13 @@
-package com.raouf.noteapp
+package com.raouf.noteapp.ViewModel.homeScreen
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.raouf.noteapp.Data.Local.Note
 import com.raouf.noteapp.Data.Local.NoteDao
-import com.raouf.noteapp.Data.Local.NoteType
 import com.raouf.noteapp.Data.Local.Sort
-import com.raouf.noteapp.ViewModel.DetailEvent
-import com.raouf.noteapp.ViewModel.NoteEvent
-import com.raouf.noteapp.ViewModel.NoteState
+import com.raouf.noteapp.ViewModel.homeScreen.NoteEvent
+import com.raouf.noteapp.ViewModel.homeScreen.NoteState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,9 +18,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -47,11 +39,11 @@ class NoteViewModel @Inject constructor(
 
 
     val state = combine(_state , _noteList , _sortType){ state, notelist, sortType  ->
-        state.copy(
+        state.copy (
             noteList = notelist,
             Sort = sortType,
         )
-    }.stateIn(viewModelScope , SharingStarted.WhileSubscribed(5000),NoteState())
+    }.stateIn(viewModelScope , SharingStarted.WhileSubscribed(5000), NoteState())
 
 
     fun onEvent(event: NoteEvent){
@@ -75,14 +67,16 @@ class NoteViewModel @Inject constructor(
             NoteEvent.CloseDialog -> {
                 _state.update {
                     it.copy(
-                        isDeletingNote = false
+                        isDeletingNote = false,
+                        selectedNote = null
                     )
                 }
             }
-            NoteEvent.OpenDialog -> {
+           is  NoteEvent.OpenDialog -> {
                     _state.update {
                         it.copy(
-                            isDeletingNote = true
+                            isDeletingNote = true,
+                            selectedNote = event.note
                         )
                     }
             }

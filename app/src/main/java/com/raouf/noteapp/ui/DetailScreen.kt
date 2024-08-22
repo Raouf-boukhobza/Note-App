@@ -41,9 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.raouf.noteapp.Data.Local.NoteType
-import com.raouf.noteapp.ViewModel.DetailEvent
-import com.raouf.noteapp.ViewModel.DetailState
-import com.raouf.noteapp.ViewModel.DetailViewModel
+import com.raouf.noteapp.ViewModel.detailScreen.DetailEvent
+import com.raouf.noteapp.ViewModel.detailScreen.DetailState
 import com.raouf.noteapp.ui.theme.deepPurple
 import com.raouf.noteapp.ui.theme.green
 import com.raouf.noteapp.ui.theme.lightBlue
@@ -155,13 +154,15 @@ fun DetailScreen(
                     unfocusedBorderColor = Color.Black
                 ) ,
                 placeholder = {
-                    Text(text = "TAB TO ADD THE DESCRIPTION",
+                    Text(
+                    text = "TAB TO ADD THE DESCRIPTION",
                     fontSize = 16.sp,
                     color = Color.Gray
                     )
                 }
             )
-            Row(modifier = Modifier.fillMaxWidth(),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly){
              NoteColors(
                  state = state,

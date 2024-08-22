@@ -57,8 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.raouf.noteapp.Data.Local.Sort
-import com.raouf.noteapp.ViewModel.NoteEvent
-import com.raouf.noteapp.ViewModel.NoteState
+import com.raouf.noteapp.ViewModel.homeScreen.NoteEvent
+import com.raouf.noteapp.ViewModel.homeScreen.NoteState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,6 +135,8 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(25.dp))
 
 
+
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -143,10 +145,12 @@ fun HomeScreen(
             ){
                 val list = state.value.noteList
 
+
                     items(list){ note ->
                         var visible by remember {
                             mutableStateOf(true)
                         }
+
                         NotesView(
                             title = note.title,
                             description = note.description,
@@ -159,20 +163,24 @@ fun HomeScreen(
                               )
                             },
                             onLongClick = {
-                                onEvent(NoteEvent.OpenDialog)
+                                onEvent(NoteEvent.OpenDialog(note = note))
                             },
-                            isvisible = visible,
-                            date = note.date
+                            date = note.date ,
+                            visible = visible
                         )
+
                         if (state.value.isDeletingNote){
                             DeleteDialog(
-                                cancel = { onEvent(NoteEvent.CloseDialog) }) {
+                                cancel = {onEvent(NoteEvent.CloseDialog)}){
                                 visible = false
-                                onEvent(NoteEvent.DeleteNote(note))
+                                onEvent(NoteEvent.DeleteNote(state.value.selectedNote!!))
                             }
                         }
+
                     }
             }
+
+
 
         }
     }
@@ -229,12 +237,13 @@ private fun NotesView(
     color: Color,
     onNoteClick : () -> Unit,
     onLongClick : () -> Unit,
-    isvisible : Boolean,
-    date : String
+    date : String,
+    visible : Boolean
 ){
 
+
     AnimatedVisibility(
-        visible = isvisible,
+        visible = visible,
         exit = fadeOut(animationSpec = tween(durationMillis = 300))
             .plus(scaleOut(animationSpec = tween(durationMillis = 500)))) {
         Surface(

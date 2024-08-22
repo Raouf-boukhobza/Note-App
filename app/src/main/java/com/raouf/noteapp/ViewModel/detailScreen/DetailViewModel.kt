@@ -1,4 +1,4 @@
-package com.raouf.noteapp.ViewModel
+package com.raouf.noteapp.ViewModel.detailScreen
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb

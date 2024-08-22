@@ -7,8 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.raouf.noteapp.NoteViewModel
-import com.raouf.noteapp.ViewModel.DetailViewModel
+import com.raouf.noteapp.ViewModel.homeScreen.NoteViewModel
+import com.raouf.noteapp.ViewModel.detailScreen.DetailViewModel
 import kotlinx.serialization.Serializable
 
 
