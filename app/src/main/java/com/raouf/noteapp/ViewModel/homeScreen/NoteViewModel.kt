@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class NoteViewModel @Inject constructor(
+class NoteViewModel @Inject constructor (
     private val dao : NoteDao
 ) : ViewModel() {
 
@@ -30,6 +30,7 @@ class NoteViewModel @Inject constructor(
     private val _sortType = MutableStateFlow(Sort.All)
 
     @OptIn(ExperimentalCoroutinesApi::class)
+
     private val _noteList : StateFlow<List<Note>> = _sortType.flatMapLatest{ sorttype ->
          when(sorttype){
              Sort.All -> dao.selectAllNote()
@@ -68,7 +69,7 @@ class NoteViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         isDeletingNote = false,
-                        selectedNote = null
+                        selectedNote = null,
                     )
                 }
             }

@@ -104,7 +104,6 @@ fun HomeScreen(
         },
         containerColor = Color.Black
     ) { paddingValues ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()

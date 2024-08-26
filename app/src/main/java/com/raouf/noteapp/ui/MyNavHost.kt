@@ -15,7 +15,6 @@ import kotlinx.serialization.Serializable
 @Composable
 fun MyNavHost(
     navController: NavHostController,
-    homeViewModel : NoteViewModel,
 ){
 
     NavHost(
@@ -23,6 +22,7 @@ fun MyNavHost(
         startDestination = Home
     ) {
         composable<Home> {
+            val homeViewModel : NoteViewModel = hiltViewModel(it)
             HomeScreen(
                 onEvent = homeViewModel::onEvent,
                 state = homeViewModel.state.collectAsState(),

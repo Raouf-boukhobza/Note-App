@@ -89,8 +89,8 @@ class DetailViewModel @Inject constructor(
                     type = type,
                     color = color.toArgb(),
                     date = date
-
                 )
+                
                 viewModelScope.launch(Dispatchers.IO){
                     dao.addNote(note)
                 }
@@ -127,6 +127,7 @@ class DetailViewModel @Inject constructor(
         }
 
     }
+
     private fun getCurrentTime() : String {
         val currentTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
